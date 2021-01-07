@@ -138,6 +138,7 @@ ApplicationWindow {
         property var chatSplitView
         property var walletSplitView
         property var profileSplitView
+        property bool removeMnemonicAfterLogin: false
         property bool walletEnabled: defaultAppSettings.walletEnabled
         property bool browserEnabled: defaultAppSettings.browserEnabled
         property bool displayChatImages: defaultAppSettings.displayChatImages
@@ -212,6 +213,14 @@ ApplicationWindow {
                 console.error('Could not parse the whitelist for sites', e)
             }
             applicationWindow.settingsLoaded()
+        }
+    }
+    Connections {
+        target: profileModel
+        ignoreUnknownSignals: true
+        enabled: appSettings.removeMnemonicAfterLogin
+        onInitialized: {
+            profileModel.mnemonic.remove()
         }
     }
 
@@ -361,6 +370,7 @@ ApplicationWindow {
         id: existingKey
         ExistingKey {
             onClosed: function () {
+                appSettings.removeMnemonicAfterLogin = false
                 if (hasAccounts) {
                     applicationWindow.navigateTo("InitialState")
                 } else {
